@@ -1,0 +1,490 @@
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+// THREE is assumed to be globally available via a script tag in the environment.
+// import * as THREE from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js'; // This line caused the error
+
+// Main App component
+const App = () => {
+  const [currentPage, setCurrentPage] = useState('home'); // State to manage current page
+  const [isMenuOpen, setIsMenuOpen] = useState(false); // State to manage mobile menu visibility
+
+  // Function to navigate between pages
+  const navigate = (page) => {
+    setCurrentPage(page);
+    setIsMenuOpen(false); // Close menu on navigation
+  };
+
+  // Toggle mobile menu
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black text-white font-inter flex flex-col">
+      {/* Header and Navigation */}
+      <header className="bg-gray-800 shadow-lg p-4 md:p-6 flex justify-between items-center rounded-b-xl relative z-10">
+        <h1 className="text-2xl md:text-3xl font-bold text-teal-400">SARTHAK SHARMA</h1>
+        <nav className="hidden md:flex space-x-6">
+          <NavLink page="home" currentPage={currentPage} navigate={navigate}>Home</NavLink>
+          <NavLink page="education" currentPage={currentPage} navigate={navigate}>Education</NavLink>
+          <NavLink page="skills" currentPage={currentPage} navigate={navigate}>Skills</NavLink>
+          <NavLink page="experience" currentPage={currentPage} navigate={navigate}>Experience</NavLink>
+          <NavLink page="projects" currentPage={currentPage} navigate={navigate}>Projects</NavLink>
+          <NavLink page="certifications" currentPage={currentPage} navigate={navigate}>Certifications</NavLink>
+          <NavLink page="contact" currentPage={currentPage} navigate={navigate}>Contact</NavLink>
+        </nav>
+        {/* Mobile menu button */}
+        <button className="md:hidden text-white focus:outline-none" onClick={toggleMenu}>
+          <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={isMenuOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"}></path>
+          </svg>
+        </button>
+      </header>
+
+      {/* Mobile navigation menu */}
+      {isMenuOpen && (
+        <div className="md:hidden bg-gray-800 p-4 space-y-2 rounded-b-xl shadow-lg relative z-10">
+          <NavLink page="home" currentPage={currentPage} navigate={navigate}>Home</NavLink>
+          <NavLink page="education" currentPage={currentPage} navigate={navigate}>Education</NavLink>
+          <NavLink page="skills" currentPage={currentPage} navigate={navigate}>Skills</NavLink>
+          <NavLink page="experience" currentPage={currentPage} navigate={navigate}>Experience</NavLink>
+          <NavLink page="projects" currentPage={currentPage} navigate={navigate}>Projects</NavLink>
+          <NavLink page="contact" currentPage={currentPage} navigate={navigate}>Contact</NavLink>
+          <NavLink page="certifications" currentPage={currentPage} navigate={navigate}>Certifications</NavLink>
+        </div>
+      )}
+
+      {/* Main content area */}
+      <main className="flex-grow container mx-auto px-4 py-8 md:py-12 relative z-0">
+        {/* Render current page based on state with a key for transition */}
+        {currentPage === 'home' && <HomePage key="home-page" />}
+        {currentPage === 'education' && <EducationPage key="education-page" />}
+        {currentPage === 'skills' && <SkillsPage key="skills-page" />}
+        {currentPage === 'experience' && <ExperiencePage key="experience-page" />}
+        {currentPage === 'projects' && <ProjectsPage key="projects-page" />}
+        {currentPage === 'certifications' && <CertificationsPage key="certifications-page" />}
+        {currentPage === 'contact' && <ContactPage key="contact-page" />}
+      </main>
+
+      {/* Footer */}
+      <footer className="bg-gray-800 text-center p-4 rounded-t-xl shadow-lg mt-8 relative z-10">
+        <p className="text-gray-400">&copy; {new Date().getFullYear()} Sarthak Sharma. All rights reserved.</p>
+      </footer>
+    </div>
+  );
+};
+
+// NavLink component for navigation items
+const NavLink = ({ page, currentPage, navigate, children }) => (
+  <button
+    className={`px-4 py-2 rounded-lg transition-colors duration-300 ${
+      currentPage === page
+        ? 'bg-teal-600 text-white shadow-md'
+        : 'text-gray-300 hover:text-white hover:bg-gray-700'
+    }`}
+    onClick={() => navigate(page)}
+  >
+    {children}
+  </button>
+);
+
+// Page Component Wrapper with Fade-in Effect
+const PageWrapper = ({ children }) => {
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    // Set isVisible to true after component mounts to trigger the fade-in
+    setIsVisible(true);
+  }, []);
+
+  return (
+    <section
+      className={`transition-opacity duration-500 ease-in-out ${
+        isVisible ? 'opacity-100' : 'opacity-0'
+      } bg-gray-800 p-8 rounded-xl shadow-2xl relative z-10`}
+    >
+      {children}
+    </section>
+  );
+};
+
+// Three.js Background Component
+const ThreeDBackground = () => {
+  const mountRef = useRef(null);
+  const animationFrameId = useRef(null);
+  const mouseX = useRef(0);
+  const mouseY = useRef(0);
+
+  const animate = useCallback((scene, camera, renderer, particles) => {
+    animationFrameId.current = requestAnimationFrame(() => animate(scene, camera, renderer, particles));
+
+    // Animate particles
+    if (particles) {
+      particles.rotation.x += 0.0005;
+      particles.rotation.y += 0.001;
+      particles.position.x = mouseX.current * 0.005;
+      particles.position.y = -mouseY.current * 0.005;
+    }
+
+    renderer.render(scene, camera);
+  }, []);
+
+  useEffect(() => {
+    const currentMount = mountRef.current;
+    if (!currentMount) return;
+
+    // Ensure THREE is available globally
+    if (typeof THREE === 'undefined') {
+      console.error("THREE.js is not loaded. Make sure the Three.js script is included in your HTML.");
+      return;
+    }
+
+    // Scene setup
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, currentMount.clientWidth / currentMount.clientHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true }); // alpha: true for transparent background
+    renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
+    currentMount.appendChild(renderer.domElement);
+
+    // Particles
+    const particleCount = 500;
+    const particlesGeometry = new THREE.BufferGeometry();
+    const positions = new Float32Array(particleCount * 3);
+    const colors = new Float32Array(particleCount * 3);
+
+    const color = new THREE.Color();
+
+    for (let i = 0; i < particleCount; i++) {
+      // Position
+      positions[i * 3] = (Math.random() - 0.5) * 10;
+      positions[i * 3 + 1] = (Math.random() - 0.5) * 10;
+      positions[i * 3 + 2] = (Math.random() - 0.5) * 10;
+
+      // Color (shades of teal/blue)
+      color.setHSL(0.5 + Math.random() * 0.2, 0.7, 0.5 + Math.random() * 0.3); // Hue, Saturation, Lightness
+      colors[i * 3] = color.r;
+      colors[i * 3 + 1] = color.g;
+      colors[i * 3 + 2] = color.b;
+    }
+
+    particlesGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    particlesGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+    const particlesMaterial = new THREE.PointsMaterial({
+      size: 0.05,
+      vertexColors: true,
+      transparent: true,
+      blending: THREE.AdditiveBlending,
+      sizeAttenuation: true
+    });
+
+    const particles = new THREE.Points(particlesGeometry, particlesMaterial);
+    scene.add(particles);
+
+    camera.position.z = 3;
+
+    // Mouse interaction for subtle movement
+    const onMouseMove = (event) => {
+      mouseX.current = (event.clientX / window.innerWidth) * 2 - 1;
+      mouseY.current = -(event.clientY / window.innerHeight) * 2 + 1;
+    };
+
+    window.addEventListener('mousemove', onMouseMove);
+
+    // Handle window resize
+    const onWindowResize = () => {
+      camera.aspect = currentMount.clientWidth / currentMount.clientHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
+    };
+    window.addEventListener('resize', onWindowResize);
+
+    // Start animation loop
+    animate(scene, camera, renderer, particles);
+
+    // Cleanup function
+    return () => {
+      cancelAnimationFrame(animationFrameId.current);
+      window.removeEventListener('resize', onWindowResize);
+      window.removeEventListener('mousemove', onMouseMove);
+      if (currentMount && renderer.domElement) {
+        currentMount.removeChild(renderer.domElement);
+      }
+      renderer.dispose();
+      particlesGeometry.dispose();
+      particlesMaterial.dispose();
+    };
+  }, [animate]); // Re-run effect if animate function changes (due to useCallback)
+
+  return (
+    <div ref={mountRef} className="absolute inset-0 z-0 overflow-hidden">
+      {/* Three.js canvas will be appended here */}
+    </div>
+  );
+};
+
+
+// Home/About Page Component
+const HomePage = () => (
+  <div className="relative w-full h-full">
+    <ThreeDBackground />
+    <PageWrapper>
+      <h2 className="text-4xl font-extrabold text-teal-400 mb-6 text-center">About Me</h2>
+      <div className="flex flex-col md:flex-row items-center md:space-x-8">
+        <div className="md:w-1/3 mb-6 md:mb-0">
+          <img
+            src="https://placehold.co/300x300/1a202c/a0aec0?text=Sarthak"
+            alt="Sarthak Sharma"
+            className="rounded-full w-48 h-48 md:w-64 md:h-64 object-cover mx-auto shadow-lg border-4 border-teal-500"
+          />
+        </div>
+        <div className="md:w-2/3 text-lg leading-relaxed">
+          <p className="mb-4">
+            Aspiring IT professional looking for an opportunity to apply analytical and programming skills to support data-driven
+            decisions in a dynamic organization. Aiming to learn, grow, and gain practical experience in a corporate environment.
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
+            <p><strong className="text-teal-300">Mobile:</strong> +91-6265211231</p>
+            <p><strong className="text-teal-300">Email:</strong> SARTHAK5634SHARMA@GMAIL.COM</p>
+            <p><strong className="text-teal-300">Location:</strong> Raipur, Chhattisgarh (492001)</p>
+            <p>
+              <strong className="text-teal-300">Social:</strong>{' '}
+              <a href="https://www.linkedin.com/in/sarthaksharma" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline">LinkedIn</a> |{' '}
+              <a href="https://github.com/sarthaksharma" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:underline">GitHub</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </PageWrapper>
+  </div>
+);
+
+// Education Page Component
+const EducationPage = () => (
+  <PageWrapper>
+    <h2 className="text-4xl font-extrabold text-teal-400 mb-8 text-center">Education</h2>
+    <div className="space-y-8">
+      <EducationCard
+        degree="BACHELOR OF TECHNOLOGY"
+        major="Computer Science And Engineering"
+        institution="Government Engineering College Raipur"
+        duration="Nov 2021 - Jun 2025"
+        grade="CGPA-8.3"
+      />
+      <EducationCard
+        degree="INTERMEDIATE EDUCATION"
+        major="Science"
+        institution="Deshbandhu English Higher Secondary School"
+        duration="Jun 2020 - Mar 2021"
+        grade="Percentage - 91.2%"
+      />
+    </div>
+  </PageWrapper>
+);
+
+// Education Card Component
+const EducationCard = ({ degree, major, institution, duration, grade }) => (
+  <div className="bg-gray-700 p-6 rounded-lg shadow-xl hover:shadow-teal-500/30 transition-shadow duration-300">
+    <h3 className="text-2xl font-bold text-white mb-2">{degree}</h3>
+    <p className="text-teal-300 text-xl mb-1">{major}</p>
+    <p className="text-gray-300 text-lg mb-1">{institution}</p>
+    <p className="text-gray-400 text-md mb-1">{duration}</p>
+    <p className="text-gray-400 text-md">{grade}</p>
+  </div>
+);
+
+// Skills Page Component
+const SkillsPage = () => (
+  <PageWrapper>
+    <h2 className="text-4xl font-extrabold text-teal-400 mb-8 text-center">Skills</h2>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <SkillCategory
+        title="TECHNICAL SKILLS"
+        skills={[
+          "Programming Languages: Python | SQL",
+          "Databases: RDBMS",
+          "Data Analysis: Data Cleaning | Data Mining | Data Analysis | EDA | ETL",
+          "Data Visualization: Power BI | Microsoft Excel (Advanced) | Tableau",
+          "Tools and Technology: NumPy | Pandas | Seaborn | Scikit learn | Web Scraping | PostgreSQL"
+        ]}
+      />
+      <SkillCategory
+        title="SOFT SKILLS"
+        skills={[
+          "English (Fluent) | Hindi (Fluent)",
+          "Teamwork",
+          "Leadership",
+          "Presentation",
+          "Problem Solving",
+          "Adaptive and Learning Mindset"
+        ]}
+      />
+    </div>
+  </PageWrapper>
+);
+
+// Skill Category Component
+const SkillCategory = ({ title, skills }) => (
+  <div className="bg-gray-700 p-6 rounded-lg shadow-xl hover:shadow-teal-500/30 transition-shadow duration-300">
+    <h3 className="text-2xl font-bold text-white mb-4">{title}</h3>
+    <ul className="list-disc list-inside space-y-2 text-lg text-gray-300">
+      {skills.map((skill, index) => (
+        <li key={index}>{skill}</li>
+      ))}
+    </ul>
+  </div>
+);
+
+// Experience Page Component
+const ExperiencePage = () => (
+  <PageWrapper>
+    <h2 className="text-4xl font-extrabold text-teal-400 mb-8 text-center">Experience</h2>
+    <div className="space-y-8">
+      <ExperienceCard
+        title="AI-ML INTERN"
+        company="AI INNOVATION WORLD"
+        duration="JULY 2024 - AUG 2024"
+        description={[
+          "Implemented 5+ foundational ML models using Python and AI Tool, automating and optimizing core ML workflows and enhance processing efficiency by 30%.",
+          "Tech Stack: Python, ChatGPT, Gemini, NumPy, Scikit-Learn, Google Colab"
+        ]}
+      />
+      <ExperienceCard
+        title="MACHINE LEARNING INTERN"
+        company="INTERNSHALA"
+        duration="JULY 2023 - SEP 2023"
+        description={[
+          "Collected, cleaned, modified, ETL and explored data for a House Price Prediction project.",
+          "Boosted data processing efficiency by 20%, enhancing overall model performance and execution speed.",
+          "Tech Stack: Python, Jupyter Notebook, Pandas, NumPy, MS Excel, Scikit-learn"
+        ]}
+      />
+    </div>
+  </PageWrapper>
+);
+
+// Experience Card Component
+const ExperienceCard = ({ title, company, duration, description }) => (
+  <div className="bg-gray-700 p-6 rounded-lg shadow-xl hover:shadow-teal-500/30 transition-shadow duration-300">
+    <h3 className="text-2xl font-bold text-white mb-2">{title}</h3>
+    <p className="text-teal-300 text-xl mb-1">{company}</p>
+    <p className="text-gray-400 text-md mb-4">{duration}</p>
+    <ul className="list-disc list-inside space-y-2 text-lg text-gray-300">
+      {description.map((item, index) => (
+        <li key={index}>{item}</li>
+      ))}
+    </ul>
+  </div>
+);
+
+// Projects Page Component
+const ProjectsPage = () => (
+  <PageWrapper>
+    <h2 className="text-4xl font-extrabold text-teal-400 mb-8 text-center">Projects</h2>
+    <div className="space-y-8">
+      <ProjectCard
+        title="BOOKSTORE-DATA-ANALYSIS-USING-WEB-SCRAPING-EDA-AND-SQL"
+        description={[
+          "End-to-end analysis of web-scraped 1000+ book data using Beautiful Soup, Python (EDA), SQL, and Power BI to uncover trends in pricing, ratings, stock, and categories.",
+          "Tech Stack: MS Excel, Jupyter Notebook, PostgreSQL, Power BI, Beautiful Soup"
+        ]}
+      />
+      <ProjectCard
+        title="ONLINEBOOKSTORE"
+        description={[
+          "Designed and implemented a relational SQL database managing 500+ customer records, inventory, orders, and transactions, improving data retrieval speed by 40%.",
+          "Tech Stack: MS Excel, Power Query Editor, PostgreSQL"
+        ]}
+      />
+      <ProjectCard
+        title="AMAZON PRODUCT SALES REPORT"
+        description={[
+          "Developed interactive Power BI dashboard integrating Amazon sales data, uncovering key product trends that influenced a 15% increase in high-margin product sales and elevated inventory turnover.",
+          "Tech Stack: MS Excel, Power BI"
+        ]}
+      />
+      <ProjectCard
+        title="IMDB-MOVIE-DATA-ANALYSIS"
+        description={[
+          "Performed EDA on IMDB data using Python and Seaborn to analyze top-rated movies, genres, and key contributors.",
+          "Tech Stack: Pandas, NumPy, Seaborn, Jupyter Notebook, MS Excel"
+        ]}
+      />
+    </div>
+  </PageWrapper>
+);
+
+// Project Card Component
+const ProjectCard = ({ title, description }) => (
+  <div className="bg-gray-700 p-6 rounded-lg shadow-xl hover:shadow-teal-500/30 transition-shadow duration-300">
+    <h3 className="text-2xl font-bold text-white mb-2">{title}</h3>
+    <ul className="list-disc list-inside space-y-2 text-lg text-gray-300">
+      {description.map((item, index) => (
+        <li key={index}>{item}</li>
+      ))}
+    </ul>
+  </div>
+);
+
+// Certifications Page Component
+const CertificationsPage = () => (
+  <PageWrapper>
+    <h2 className="text-4xl font-extrabold text-teal-400 mb-8 text-center">Certifications</h2>
+    <div className="space-y-6">
+      <CertificationCard
+        name="PWSKILLS | SQL MICRO COURSE"
+      />
+      <CertificationCard
+        name="INDUSTRIAL TRAINING | NASSCOM FUTURE SKILLS"
+      />
+    </div>
+  </PageWrapper>
+);
+
+// Certification Card Component
+const CertificationCard = ({ name }) => (
+  <div className="bg-gray-700 p-5 rounded-lg shadow-xl hover:shadow-teal-500/30 transition-shadow duration-300">
+    <p className="text-xl font-semibold text-white">{name}</p>
+  </div>
+);
+
+// Contact Page Component
+const ContactPage = () => (
+  <PageWrapper>
+    <h2 className="text-4xl font-extrabold text-teal-400 mb-8 text-center">Get in Touch</h2>
+    <p className="text-lg text-gray-300 mb-6">
+      I'm always open to new opportunities and collaborations. Feel free to reach out!
+    </p>
+    <div className="space-y-4 text-xl">
+      <p>
+        <strong className="text-teal-300">Email:</strong>{' '}
+        <a href="mailto:SARTHAK5634SHARMA@GMAIL.COM" className="text-blue-400 hover:underline">SARTHAK5634SHARMA@GMAIL.COM</a>
+      </p>
+      <p>
+        <strong className="text-teal-300">Mobile:</strong> +91-6265211231
+      </p>
+      <p>
+        <strong className="text-teal-300">Location:</strong> Raipur, Chhattisgarh (492001)</p>
+    </div>
+    <div className="mt-8 flex justify-center space-x-6">
+      <a href="https://www.linkedin.com/in/sarthaksharma" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 transition-colors duration-300">
+        <svg className="w-10 h-10" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
+        </svg>
+      </a>
+      <a href="https://github.com/sarthaksharma" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-gray-300 transition-colors duration-300">
+        <svg className="w-10 h-10" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path fillRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.529 2.341 1.088 2.91.832.092-.647.359-1.088.65-1.338-2.22-.253-4.555-1.113-4.555-4.953 0-1.091.39-1.984 1.029-2.682-.103-.253-.446-1.272.098-2.65 0 0 .84-.268 2.75 1.022A9.607 9.607 0 0112 6.865c.85.004 1.701.114 2.516.331 1.909-1.29 2.747-1.022 2.747-1.022.546 1.379.202 2.398.099 2.65.64.698 1.028 1.591 1.028 2.682 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.579.688.482C21.137 20.19 24 16.425 24 12.017 24 6.484 19.522 2 12 2z" clipRule="evenodd" />
+        </svg>
+      </a>
+    </div>
+  </PageWrapper>
+);
+
+// Tailwind CSS CDN link (will be automatically added by the environment)
+// <script src="https://cdn.tailwindcss.com"></script>
+
+// Font Inter (will be automatically added by the environment)
+// <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+// This is the main component that will be rendered by default
+export default App;
