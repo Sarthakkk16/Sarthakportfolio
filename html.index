@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sarthak Sharma Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+<style>
+body {margin: 0; font-family: 'Inter', sans-serif; background: #f9fafb; color: #333; scroll-behavior: smooth;}
+header {padding: 80px 20px; text-align: center; background: linear-gradient(to right, #667eea, #764ba2); color: white;}
+header h1 {font-size: 48px; margin: 0;}
+header p {font-size: 20px; max-width: 600px; margin: auto;}
+nav {position: sticky; top: 0; background: white; padding: 10px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+nav a {margin: 0 15px; text-decoration: none; color: #333; font-weight: 600;}
+nav a:hover {color: #667eea;}
+section {max-width: 900px; margin: 40px auto; padding: 0 20px;}
+section h2 {text-align: center; font-size: 32px; margin-bottom: 20px; color: #333;}
+.card-grid {display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;}
+.card {background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: transform 0.3s;}
+.card:hover {transform: translateY(-5px);}
+.card h3 {margin-top: 0; font-size: 20px; color: #667eea;}
+footer {text-align: center; padding: 20px; font-size: 14px; color: #777;}
+.button {display: inline-block; margin: 10px; padding: 10px 20px; background: white; color: #667eea; border: 2px solid white; border-radius: 5px; font-weight: 600; text-decoration: none; transition: background 0.3s, color 0.3s;}
+.button:hover {background: #667eea; color: white;}
+</style>
+</head>
+<body>
+
+<nav>
+<a href="#certifications">Certifications</a>
+<a href="#projects">Projects</a>
+<a href="#education">Education</a>
+<a href="#resume">Resume</a>
+<a href="#skills">Skills</a>
+</nav>
+
+<header>
+<h1>Sarthak Sharma</h1>
+<p>Data Analyst | Python | SQL | Power BI | Aspiring IT Professional</p>
+</header>
+
+<section id="certifications">
+<h2>Certifications</h2>
+<div class="card-grid">
+<div class="card">
+<h3>SQL Micro Course - PW Skills</h3>
+<a href="https://drive.google.com/file/d/1RGB-XHUrhWYgUOaDP1WD9Tjs25M41TFi/view?usp=sharing" target="_blank">View Certificate</a>
+</div>
+<div class="card">
+<h3>Industrial Training - NASSCOM Future Skills</h3>
+<a href="https://drive.google.com/file/d/1Dq-zxjqd2Dzdvzs0xeIrXRRV_UBFBIvm/view?usp=sharing" target="_blank">View Certificate</a>
+</div>
+<div class="card">
+<h3>AI-ML Internship - AI Innovation World</h3>
+<a href="https://drive.google.com/file/d/1RGB-XHUrhWYgUOaDP1WD9Tjs25M41TFi/view?usp=sharing" target="_blank">View Certificate</a>
+</div>
+<div class="card">
+<h3>Machine Learning Internship - Internshala</h3>
+<a href="https://drive.google.com/file/d/1fw4LeIdCotZaNkIIm6uNpyTf43LpnOEu/view?usp=sharing" target="_blank">View Certificate</a>
+</div>
+</div>
+</section>
+
+<section id="projects">
+<h2>Projects</h2>
+<div class="card-grid">
+<div class="card">
+<h3>Online Bookstore</h3>
+<p>SQL database managing 500+ records, improving data retrieval speed by 40%.</p>
+<a href="https://github.com/Sarthakkk16/OnlineBookstore" target="_blank">View Project</a>
+</div>
+<div class="card">
+<h3>Amazon Product Sales Report</h3>
+<p>Power BI dashboard uncovering trends, increasing high-margin product sales.</p>
+<a href="https://github.com/Sarthakkk16/Amazon_Product_Sales" target="_blank">View Project</a>
+</div>
+<div class="card">
+<h3>IMDB Movie Data Analysis</h3>
+<p>EDA on IMDB data using Python and Seaborn to analyze movie trends.</p>
+<a href="https://github.com/Sarthakkk16/IMDB-Movie-Data-Analysis" target="_blank">View Project</a>
+</div>
+<div class="card">
+<h3>Bookstore Data Analysis</h3>
+<p>End-to-end analysis using web scraping, EDA, SQL, and Power BI on book data.</p>
+<a href="https://github.com/Sarthakkk16/Bookstore-Data-Analysis-using-Web-Scraping-EDA-and-SQL" target="_blank">View Project</a>
+</div>
+</div>
+</section>
+
+<section id="education">
+<h2>Education</h2>
+<div class="card">
+<h3>Bachelor of Technology (CSE)</h3>
+<p>Government Engineering College Raipur | CGPA: 8.3</p>
+<p>Nov 2021 - Jun 2025</p>
+</div>
+<div class="card">
+<h3>Intermediate - Science</h3>
+<p>Deshbandhu English Higher Secondary School | Percentage: 91.2%</p>
+<p>Jun 2020 - Mar 2021</p>
+</div>
+</section>
+
+<section id="resume">
+<h2>Resume</h2>
+<div class="card">
+<p>View or download my complete resume for detailed information about my projects, skills, and academic journey.</p>
+<a href="https://drive.google.com/file/d/1KjW8uYRFAIZbjQDXkIRsAjjpbiTKVmYE/view?usp=drive_link" target="_blank">View Resume</a>
+</div>
+</section>
+
+<section id="skills">
+<h2>Skills</h2>
+<div class="card">
+<p><strong>Programming:</strong> Python, SQL</p>
+<p><strong>Data Tools:</strong> Power BI, Excel, Tableau, Jupyter, Git</p>
+<p><strong>Libraries:</strong> NumPy, Pandas, Seaborn, Scikit-learn</p>
+<p><strong>Soft Skills:</strong> Teamwork, Problem Solving, Adaptive Mindset</p>
+</div>
+</section>
+
+<footer>
+<p>© 2025 Sarthak Sharma. All rights reserved.</p>
+</footer>
+
+</body>
+</html>
